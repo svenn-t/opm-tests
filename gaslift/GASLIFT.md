@@ -1,30 +1,31 @@
 # GASLIFT Test Documentation
 
-Case Name | Case Desciption                                               | Base Model | Test<br />Type | Results<br />Match | Comments |
---------- | -----------------------------                                 | ---------- | ----- |--------------------| ------------------------------------- |
-GASLIFT-01| Two-Phase, Cartesian regular, with variable GLIFT             | GASLIFT    |       | No                 | Results are completely different because wells are not flowing. 
-GASLIFT-02| Two-Phase, Corner-Point, with variable GLIFT                  | GASLIFT    |       | Yes                | Field match is good,well matches are more variable from very good to poor.
-GASLIFT-03| Three-Phase, Corner-Point, variable GLIFT, MODEL05 PVT        | GASLIFT    |       | Yes                | Good to perfect well matches - results are reasonable. 
-GASLIFT-04| Three-Phase, Corner-Point, variable GLIFT, MODEL05 PVT/VFP    | GASLIFT    |       | Yes                | Good to perfect well matches - results are reasonable.
-GASLIFT-05| Base                                                          | MODEL05    |       | No                 | Previously, generally good well match except at end due to lack of gas lift, but is now a poor match.
-GASLIFT-06| Base and group ORAT=6000                                      | MODEL05    |       | No                 | Previously, generally good well match except at end due to lack of gas lift, but is now a poor match.
-GASLIFT-07| Base and group LIFTOPT(OPTLIFT)=NO                            | MODEL05    |       | No                 | Not matched. Should be similar to GASLIFT-05.
-GASLIFT-08| Base and group ORAT=6000, Max ALQ from VFP                    | MODEL05    |       | Mixed              | Field matches, but well results are variable, with some being well matched (B-1H) others not (B-2H).  
-GASLIFT-09| Base and group ORAT=6000, Max ALQ from VFP, TSTEP=15          | MODEL05    |       | Yes                | Very good match.
-GASLIFT-10| Base and group ORAT=6000, Max ALQ from VFP, TSTEP=15, WTEST   | MODEL05    |       | Yes                | Field matches, WTEST works, well C-2H is different.
-GASLIFT-11| Base and group ORAT=6000, Max ALQ from VFP, GLIFTLIM(MXLIFT)  | MODEL05    |       | Fails              | Run now fails, as the GLIFTLIM keyword isnot supported. 
-GASLIFT-12| MSW Base for Multi-Segment Wells                              | MODEL05    |       | Mixed              | Improved match, field match is good. Now only no gas lift for well C-2H, but too much gas lift for wells B-1H and B-3H. 
-GASLIFT-13| MSW and BRANPROP and NODEPROP                                 | MODEL05    |       | Mixed              | Improved match, field match is better. No gas lift for well B-2H and slightly insufficent gas lift for wells B-1H and B-3H) various "switching" messages.
-GASLIFT-14| MSW and BRANPROP and NODEPROP(GASLIFT)=YES                    | MODEL05    |       | No                 | Program threw an exception: No ALQ value registered for well: F-1H
-GASLIFT-15| MSW and BRANPROP and NODEPROP(GASLIFT)=YES, RESTART run       | MODEL05    |       | No                 | Both simulators fail - ignore results for now,  will investigate further.
+Case Name | Case Description                                              | Base Model | Field<br> Match | Groups<br>Match?| Wells<br>Match?| Comments |
+--------- | -----------------------------                                 | ---------- | ----------------| --------------- | -------------- | -------- |
+GASLIFT-01| Two-Phase, Cartesian regular, with variable GLIFT             | GASLIFT    | No  | No  | No  | Results are completely different due to the use of OLDTRAN in the commercial simulator. 
+GASLIFT-02| Two-Phase, Corner-Point, with variable GLIFT                  | GASLIFT    | Yes | No  | No  | Field match good. Some groups deviate due to some well being shut in one simulator and not the other. Especially OP-C01 and OP-CO2 deviates, perhaps due to different optimal use of gas lift to sustain group targets. OBS: some WTHP value below `WCONPROD` target for well OP-A01.
+GASLIFT-03| Three-Phase, Corner-Point, variable GLIFT, MODEL05 PVT        | GASLIFT    | Yes | Yes | Yes | Matches are generally good except for water production, and some disagreement on shut in of well, again likely due to different gas lift optima.  
+GASLIFT-04| Three-Phase, Corner-Point, variable GLIFT, MODEL05 PVT/VFP    | GASLIFT    | Yes | Yes | Yes | Similar to GASLIFT-04, with better matches on water production and well rates.
+GASLIFT-05| Base                                                          | MODEL05    | Yes | Yes | Yes | Very good match overal, with only small deviations for some wells and groups.
+GASLIFT-06| Base and group ORAT=6000                                      | MODEL05    | No  | No  | No  | On field level OPM produce more oil by using more gas lift. Deviations for C-wells and their corresponding group, perhaps due to different gas lift optima keeping both wells alive instead of shutting one. OBS: some WTHP values below `WCONPROD` target for well C-1H.
+GASLIFT-07| Base and group LIFTOPT(OPTLIFT)=NO                            | MODEL05    | Yes | No  | No  | Field results generally match with OPM using less gas lift overall. Deviations in groups are likely due to OPM keeping C-2H well alive.
+GASLIFT-08| Base and group ORAT=6000, Max ALQ from VFP                    | MODEL05    | No  | No  | No  | Results are almost identical to GASLIFT-06 (see above). OBS: some WTHP values below `WCONPROD` target for well C-2H.  
+GASLIFT-09| Base and group ORAT=6000, Max ALQ from VFP, TSTEP=15          | MODEL05    | Yes | Yes | Yes | Field oil production match while water production and gas lift disagree. Group rates generally match with some deviations. OPM disagrees on which B-well to shut in, but good matches for other wells. OBS: some WTHP values below `WCONPROD` target for wells B-1H and C-1H. 
+GASLIFT-10| Base and group ORAT=6000, Max ALQ from VFP, TSTEP=15, WTEST   | MODEL05    | Yes | No  | No  | Field generally matches with OPM using more gas lift at the end. Group M5N deviates a lot due to OPM keeping both wells in the group (C-1H and C-2H) alive. Disagreement with which of well B-2H and B-3H that has a shut in period near the beginning. 
+GASLIFT-11| Base and group ORAT=6000, Max ALQ from VFP, GLIFTLIM(MXLIFT)  | MODEL05    | -   | -   |  -  | Run now fails, as the GLIFTLIM keyword is not supported (and not recommended either). 
+GASLIFT-12| MSW Base for Multi-Segment Wells                              | MODEL05    | No  | No  | No  | In general, large disagreements, and OPM experience a lot of oscillations. This is likely due to convergence issues for multi-segment wells. As a result, targets and limitations are violated when simulations continue (see, e.g. WTHP curves). Note, except for at the very end, FOPT and FGPT are identical.  
+GASLIFT-13| MSW and BRANPROP and NODEPROP                                 | MODEL05    | No  | No  | No  | Similar conclusions as in GASLIFT-12, with maybe even more oscillations. Note that, at least, FOPT and FGPT are almost identical.
+GASLIFT-14| MSW and BRANPROP and NODEPROP(GASLIFT)=YES                    | MODEL05    | No  | No  | No  | Same conclusions as in GASLIFT-13 (with FOPT and FGPT identical as well)
+GASLIFT-15| MSW and BRANPROP and NODEPROP(GASLIFT)=YES, RESTART run       | MODEL05    |-    | -   | -   | Not run properly, ignore for now.
            
 **Notes:** 
 
-1.   _Results Match_ column indicate if the OPM Flow results match the commercial simulator, see the GASLIFT.odp document for comparisons.
-2.   Under comments, _Complete_ means that the test case is completed, it does not mean that the runs are necessarily comparable to the commercial simulator.
-3.   All cases run with one day time steps for comparison purposes.
+1.   All simulations with OPM Flow are run with a limiter on ALQ changes which currently is not turned on in the master branch. This improves match with the commercial simulator and avoids oscillations for most cases.
+2.   There are spikes in OPM Flow rate after opening wells due to the current implementation of `WTEST` using max. gas lift (ALQ) and only later adjusting it with gas lift optimization.   
+3.   All _Match?_ column indicate if the OPM Flow results match the commercial simulator, but it is not a binary conclusion! See comments in the table and summary figures to get the details. Links to figures of field, group and well results are given below for each case.
+4.   Max. time step follows the `TUNING` keyword for each case. In short, max. time step for GASLIFT-01 to GASLIFT-04 are 5.0 days, while for GASLIFT-05 to GASLIFT-15 it is 1.0 day.
 
-**Version: 09 December 2022**
+**Version: September 2024**
 
 ### GASLIFT Model (Irregular Corner-Point)
 
@@ -56,7 +57,7 @@ The model tests the use Gas Lift Optimization via the of the LIFTOPT and WLIFTOP
  7) Well lift optimization weighting factor set to 3.0 for wells OP-A01, OP-B01 and OP-C02 2022-04-01.
  8) Maximum group PLAT-1 available lift gas set to 9E5 m3 and FIELD ORAT set to 10E3 m3/day on 2022-08-01. 
 
-[GASLIFT-01 ECL Results](plots/GASLIFT-01-ECL.md) 
+[GASLIFT-01 Comparison Results](plots/GASLIFT-01.md) 
 
 ### GASLIFT-02 Description and Results
 
@@ -72,7 +73,7 @@ The model tests the use of Gas Lift Optimization via the LIFTOPT and WLIFTOPT ke
  7) Well lift optimization weighting factor set to 3.0 for wells OP-A01, OP-B01 and OP-C02 2022-04-01.
  8) Maximum group PLAT-1 available lift gas set to 9E5 m3 and FIELD ORAT set to 10E3 m3/day on 2022-08-01. 
 
-[GASLIFT-02 ECL Results](plots/GASLIFT-02-ECL.md) 
+[GASLIFT-02 Comparison Results](plots/GASLIFT-02.md) 
 
 ### GASLIFT-03 Description and Results
 
@@ -88,7 +89,7 @@ The model tests the use of Gas Lift Optimization via the LIFTOPT and WLIFTOPT ke
  7) Well lift optimization weighting factor set to 3.0 for wells OP-A01, OP-B01 and OP-C02 2022-04-01.
  8) Maximum group PLAT-1 available lift gas set to 9E5 m3 and FIELD ORAT set to 10E3 m3/day on 2022-08-01. 
 
-[GASLIFT-03 ECL Results](plots/GASLIFT-03-ECL.md) 
+[GASLIFT-03 Comparison Results](plots/GASLIFT-03.md) 
 
 ### GASLIFT-04 Description and Results
 The model tests the use of Gas Lift Optimization via the LIFTOPT and WLIFTOPT keywords and is based on GASLIFT-03.DATA, it 
@@ -103,7 +104,7 @@ The model tests the use of Gas Lift Optimization via the LIFTOPT and WLIFTOPT ke
  7) Well lift optimization weighting factor set to 3.0 for wells OP-A01, OP-B01 and OP-C02 2022-04-01.
  8) Maximum group PLAT-1 available lift gas set to 9E5 m3 and FIELD ORAT set to 10E3 m3/day on 2022-08-01. 
 
-[GASLIFT-04 ECL Results](plots/GASLIFT-04-ECL.md) 
+[GASLIFT-04 Comparison Results](plots/GASLIFT-04.md) 
 
 ### GASLIFT MODEL05 Model (Irregular Corner-Point)
 
@@ -138,7 +139,7 @@ the base run for this series of cases.
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
  
-[GASLIFT-05 ECL Results](plots/GASLIFT-05-ECL.md)
+[GASLIFT-05 Comparison Results](plots/GASLIFT-05.md)
 
 ### GASLIFT-06 Description and Results
 
@@ -152,7 +153,7 @@ NETV defines that guide rates for the groups injection should be set according t
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
 
-[GASLIFT-06 ECL Results](plots/GASLIFT-06-ECL.md) 
+[GASLIFT-06 Comparison Results](plots/GASLIFT-06.md) 
 
 ### GASLIFT-07 Description and Results
 
@@ -167,7 +168,7 @@ NETV defines that guide rates for the groups injection should be set according t
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
  6) **Set LIFTOPT(OPTLIFT) to NO for gas lift optimization to be performed only for the first Newtonian iteration.**
  
-[GASLIFT-07 ECL Results](plots/GASLIFT-07-ECL.md) 
+[GASLIFT-07 Comparison Results](plots/GASLIFT-07.md) 
 
 ### GASLIFT-08 Description and Results
 
@@ -182,7 +183,7 @@ instead of the hard coded 150E3 m3/d.**
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
 
-[GASLIFT-08 ECL Results](plots/GASLIFT-08-ECL.md) 
+[GASLIFT-08 Comparison Results](plots/GASLIFT-08.md) 
 
 ### GASLIFT-09 Description and Results
 
@@ -196,7 +197,7 @@ NETV defines that guide rates for the groups injection should be set according t
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
 
-[GASLIFT-09 ECL Results](plots/GASLIFT-09-ECL.md) 
+[GASLIFT-09 Comparison Results](plots/GASLIFT-09.md) 
 
 ### GASLIFT-10 Description and Results
 
@@ -210,7 +211,7 @@ NETV defines that guide rates for the groups injection should be set according t
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
  
-[GASLIFT-10 ECL Results](plots/GASLIFT-10-ECL.md) 
+[GASLIFT-10 Comparison Results](plots/GASLIFT-10.md) 
 
 ### GASLIFT-11 Description and Results
 
@@ -224,7 +225,7 @@ NETV defines that guide rates for the groups injection should be set according t
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
 
-[GASLIFT-11 ECL Results](plots/GASLIFT-11-ECL.md) 
+[GASLIFT-11 Comparison Results](plots/GASLIFT-11.md) 
 
 ### GASLIFT-12 Description and Results
 
@@ -238,7 +239,7 @@ run is based on GASLIFT-05, and differs by using **Multi-Segment Wells** instead
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
 
-[GASLIFT-12 ECL Results](plots/GASLIFT-12-ECL.md) 
+[GASLIFT-12 Comparison Results](plots/GASLIFT-12.md) 
 
 ### GASLIFT-13 Description and Results
 The model tests the use of Gas Lift Optimization via the of the LIFTOPT and WLIFTOPT keywords, as well as GCONINJE item10 = NETV.
@@ -267,7 +268,7 @@ groups as shown below:
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
  
-[GASLIFT-13 ECL Results](plots/GASLIFT-13-ECL.md) 
+[GASLIFT-13 Comparison Results](plots/GASLIFT-13.md) 
 
 ### GASLIFT-14 Description and Results
 The model tests the use of Gas Lift Optimization via the of the LIFTOPT and WLIFTOPT keywords, as well as GCONINJE item10 = NETV.
@@ -280,7 +281,7 @@ run is based on GASLIFT-13, **and differs by reporting gas lift for all producin
  4) Injectors F-1H and F-2H are opened with maximum water injection rate of 4,000 m3/d subject to group control.  
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
  
-[GASLIFT-14 ECL Results](plots/GASLIFT-14-ECL.md) 
+[GASLIFT-14 Comparison Results](plots/GASLIFT-14.md) 
 
 **No OPM Flow Results - Note both OPM Flow and the commerical simulator fail - will investgate later.**
 
@@ -296,7 +297,7 @@ run is based on GASLIFT-13, **and differs by reporting gas lift for all producin
  5) Injectors G-3H and G-4H are opened with maximum water injection rate of 4,000 m3/d subject to group control.
  6) RESTART run.
 
-[GASLIFT-15 ECL Results](plots/GASLIFT-15-ECL.md)
+[GASLIFT-15 Comparison Results](plots/GASLIFT-15.md)
 
 **No OPM Flow Results - Note both OPM Flow and the commerical simulator fail - will investgate later.**
 
