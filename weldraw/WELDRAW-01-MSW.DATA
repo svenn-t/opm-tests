@@ -32,8 +32,10 @@
 --   1 Dec 2018 - 1 Mar 2019    WELDRAW active: 5.0 bar on D-1H, 10.0 bar on
 --                              D-2H.  Both limits are below the natural
 --                              drawdown, so both wells are cut back.
---   1 Mar 2019 - 1 Jun 2019    the limit on D-1H is removed by defaulting
---                              item 2, and D-2H is tightened to 6.0 bar.
+--   1 Mar 2019 - 1 Jun 2019    the limit on D-1H is raised to 100.0 bar,
+--                              well above its natural drawdown, so that it
+--                              no longer binds, and D-2H is tightened to
+--                              6.0 bar.
 --
 -- Item 4 (USE_LIMIT) and item 5 (GRID_BLOCKS) are left at NO / AVG, the only
 -- combination OPM Flow currently supports.
@@ -483,9 +485,11 @@ DATES
  1 MAR 2019 /
 /
 
--- Defaulting item 2 removes the limit from D-1H again; D-2H is tightened.
+-- Item 2 has no default, so the limit is always given explicitly.  D-1H is
+-- raised well above its natural drawdown, which lifts the limit in practice,
+-- and D-2H is tightened.
 WELDRAW
- 'D-1H'   1*   2*  AVG /
+ 'D-1H' 100.0  2*  AVG /
  'D-2H'   6.0  2*  AVG /
 /
 
